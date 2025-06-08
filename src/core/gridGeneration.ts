@@ -1,17 +1,14 @@
 import { MIN_DIMENSION, TileTypes } from "./constants";
-
-type Grid = TileTypes[][];
-type Room = [number, number, number, number]; // x, y, width, height
+import { Grid, Room } from "../interfaces/common";
 
 function getRandomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function generateOrganicGrid(width: number = 20, height: number = 20): Grid {
+export function generateOrganicGrid(width: number, height: number): Grid {
     // Validate dimensions
-    if (width < MIN_DIMENSION || height < MIN_DIMENSION) {
-        throw new Error(`Minimum dimensions are ${MIN_DIMENSION}x${MIN_DIMENSION}`);
-    }
+    if (width < MIN_DIMENSION) width = MIN_DIMENSION;
+    if (height < MIN_DIMENSION) height = MIN_DIMENSION;
     
     // Calculate maximum rooms (biggest dimension/2, minimum 2)
     const maxRooms = Math.max(2, Math.floor(Math.max(width, height) / 2));
@@ -148,90 +145,84 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
         }
     }
 
+    // TODO: commented out for the time being as it bumps complexity to O(n^2)
     // Flood fill to check connectivity
-    function isConnected(): boolean {
-        const visited: boolean[][] = Array(height).fill(null).map(() => Array(width).fill(false));
-        const queue: [number, number][] = [];
+    // function isConnected(): boolean {
+    //     const visited: boolean[][] = Array(height).fill(null).map(() => Array(width).fill(false));
+    //     const queue: [number, number][] = [];
         
-        // Find first empty space not on edge
-        let found = false;
-        for (let i = 1; i < height - 1 && !found; i++) {
-            for (let j = 1; j < width - 1; j++) {
-                if (grid[i][j] === TileTypes.Floor) {
-                    queue.push([i, j]);
-                    visited[i][j] = true;
-                    found = true;
-                    break;
-                }
-            }
-        }
+    //     // Find first empty space not on edge
+    //     let found = false;
+    //     for (let i = 1; i < height - 1 && !found; i++) {
+    //         for (let j = 1; j < width - 1; j++) {
+    //             if (grid[i][j] === TileTypes.Floor) {
+    //                 queue.push([i, j]);
+    //                 visited[i][j] = true;
+    //                 found = true;
+    //                 break;
+    //             }
+    //         }
+    //     }
         
-        if (queue.length === 0) {
-            return false;
-        }
+    //     if (queue.length === 0) {
+    //         return false;
+    //     }
         
-        // BFS to mark all connected empty spaces
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        while (queue.length > 0) {
-            const [i, j] = queue.shift()!;
-            for (const [di, dj] of directions) {
-                const ni = i + di;
-                const nj = j + dj;
-                if (ni > 0 && ni < height - 1 && nj > 0 && nj < width - 1) {
-                    if (grid[ni][nj] === TileTypes.Floor && !visited[ni][nj]) {
-                        visited[ni][nj] = true;
-                        queue.push([ni, nj]);
-                    }
-                }
-            }
-        }
+    //     // BFS to mark all connected empty spaces
+    //     const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    //     while (queue.length > 0) {
+    //         const [i, j] = queue.shift()!;
+    //         for (const [di, dj] of directions) {
+    //             const ni = i + di;
+    //             const nj = j + dj;
+    //             if (ni > 0 && ni < height - 1 && nj > 0 && nj < width - 1) {
+    //                 if (grid[ni][nj] === TileTypes.Floor && !visited[ni][nj]) {
+    //                     visited[ni][nj] = true;
+    //                     queue.push([ni, nj]);
+    //                 }
+    //             }
+    //         }
+    //     }
         
-        // Check if all non-edge empty spaces were visited
-        for (let i = 1; i < height - 1; i++) {
-            for (let j = 1; j < width - 1; j++) {
-                if (grid[i][j] === TileTypes.Floor && !visited[i][j]) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-    
+    //     // Check if all non-edge empty spaces were visited
+    //     for (let i = 1; i < height - 1; i++) {
+    //         for (let j = 1; j < width - 1; j++) {
+    //             if (grid[i][j] === TileTypes.Floor && !visited[i][j]) {
+    //                 return false;
+    //             }
+    //         }
+    //     }
+    //     return true;
+    // }    
     // Add organic details while maintaining connectivity
-    for (let attempt = 0; attempt < Math.floor((width * height) / 10); attempt++) {
-        const i = getRandomInt(1, height - 2);
-        const j = getRandomInt(1, width - 2);
+    // for (let attempt = 0; attempt < Math.floor((width * height) / 10); attempt++) {
+    //     const i = getRandomInt(1, height - 2);
+    //     const j = getRandomInt(1, width - 2);
         
-        if (grid[i][j] === TileTypes.Wall) {
-            // Only convert if adjacent to existing empty space
-            let adjacent = false;
-            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+    //     if (grid[i][j] === TileTypes.Wall) {
+    //         // Only convert if adjacent to existing empty space
+    //         let adjacent = false;
+    //         const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
             
-            for (const [di, dj] of directions) {
-                const ni = i + di;
-                const nj = j + dj;
-                if (ni >= 0 && ni < height && nj >= 0 && nj < width) {
-                    if (grid[ni][nj] === TileTypes.Floor) {
-                        adjacent = true;
-                        break;
-                    }
-                }
-            }
+    //         for (const [di, dj] of directions) {
+    //             const ni = i + di;
+    //             const nj = j + dj;
+    //             if (ni >= 0 && ni < height && nj >= 0 && nj < width) {
+    //                 if (grid[ni][nj] === TileTypes.Floor) {
+    //                     adjacent = true;
+    //                     break;
+    //                 }
+    //             }
+    //         }
             
-            if (adjacent) {
-                grid[i][j] = 0;
-                if (!isConnected()) {
-                    grid[i][j] = TileTypes.Wall; // Revert if breaks connectivity
-                }
-            }
-        }
-    }
+    //         if (adjacent) {
+    //             grid[i][j] = 0;
+    //             if (!isConnected()) {
+    //                 grid[i][j] = TileTypes.Wall; // Revert if breaks connectivity
+    //             }
+    //         }
+    //     }
+    // }
     
     return grid;
-}
-
-export function printGrid(grid: Grid): void {
-    for (const row of grid) {
-        console.log('|' + row.map(cell => cell === 1 ? '1' : '0').join('') + '|');
-    }
 }

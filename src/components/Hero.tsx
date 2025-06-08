@@ -1,8 +1,9 @@
 import { extend } from "@pixi/react";
 import { Sprite, Assets, Texture } from "pixi.js";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import heroTexture from "../assets/actors/hero.png"
 import { CELL_SIZE } from "../core/constants";
+import { useGameplayContext } from "../context/GameplayContext";
 
 extend({
     Sprite,
@@ -13,30 +14,46 @@ interface HeroProps {
     y: number;
 }
 
-export default function Hero({x, y}: HeroProps) {
+export default function Hero({ x, y }: HeroProps) {
+    const { isBlocked, heroPosition, setHeroPosition } = useGameplayContext();
     const [texture, setTexture] = useState<Texture>(Texture.WHITE);
-    const [coords, setCoords] = useState({x, y});
+    const positionRef = useRef(heroPosition);
 
     useEffect(() => {
-        Assets.load(heroTexture).then((texture) => {
-            setTexture(texture);
-        });
+        positionRef.current = heroPosition;
+    }, [heroPosition]);
+
+    useEffect(() => {
+        setHeroPosition({ x, y });
+        positionRef.current = { x, y };
+
+        Assets.load(heroTexture).then(setTexture);
 
         const onKeyDown = (e: KeyboardEvent) => {
+            if (e.repeat) return;
+
+            let newX = positionRef.current.x;
+            let newY = positionRef.current.y;
+
             switch (e.key) {
                 case "ArrowUp":
-                    setCoords((prev) => ({x: prev.x, y: prev.y - CELL_SIZE}));
+                    newY -= CELL_SIZE;
                     break;
                 case "ArrowDown":
-                    setCoords((prev) => ({x: prev.x, y: prev.y + CELL_SIZE}));
+                    newY += CELL_SIZE;
                     break;
                 case "ArrowLeft":
-                    setCoords((prev) => ({x: prev.x - CELL_SIZE, y: prev.y}));
+                    newX -= CELL_SIZE;
                     break;
                 case "ArrowRight":
-                    setCoords((prev) => ({x: prev.x + CELL_SIZE, y: prev.y}));
+                    newX += CELL_SIZE;
                     break;
+                default:
+                    return;
             }
+
+            if (!isBlocked(newX, newY))
+                setHeroPosition({ x: newX, y: newY });
         };
 
         window.addEventListener("keydown", onKeyDown);
@@ -47,11 +64,11 @@ export default function Hero({x, y}: HeroProps) {
     }, []);
 
 
-    return <pixiSprite 
-        texture={texture} 
-        anchor={0.5} 
-        x={coords.x} 
-        y={coords.y}
+    return <pixiSprite
+        texture={texture}
+        anchor={0.5}
+        x={heroPosition.x}
+        y={heroPosition.y}
         zIndex={9999}
     />
 }

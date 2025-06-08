@@ -1,9 +1,10 @@
 import { extend, useApplication } from "@pixi/react";
 import { Container } from "pixi.js";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { generateOrganicGrid } from "../core/gridGeneration";
 import TileManager from "./TileManager";
 import { CELL_SIZE, MIN_DIMENSION } from "../core/constants";
+import { useGameplayContext } from "../context/GameplayContext";
 
 extend({
     Container,
@@ -11,7 +12,7 @@ extend({
 
 export default function Grid() {
     const { app } = useApplication();
-    const [grid, setGrid] = useState<number[][]>([]);
+    const { grid, setGrid } = useGameplayContext();
 
     const gridWidth = useMemo(() => grid[0]?.length || 0, [grid]) * CELL_SIZE;
     const gridHeight = useMemo(() => grid.length, [grid]) * CELL_SIZE;
