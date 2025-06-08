@@ -1,7 +1,7 @@
 import { Assets, Sprite, Texture } from "pixi.js";
 import { extend } from "@pixi/react";
 import { useEffect, useRef, useState } from "react";
-import floorTexture from "../../public/assets/tiles/floor.png"
+import floorTexture from "../assets/tiles/floor.png"
 import { CELL_SIZE } from "../core/constants";
 
 extend({

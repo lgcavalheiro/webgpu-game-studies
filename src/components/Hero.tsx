@@ -1,7 +1,7 @@
 import { extend } from "@pixi/react";
 import { Sprite, Assets, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
-import heroTexture from "../../public/assets/actors/hero.png"
+import heroTexture from "../assets/actors/hero.png"
 import { CELL_SIZE } from "../core/constants";
 
 extend({
