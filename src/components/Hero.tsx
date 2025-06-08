@@ -2,6 +2,7 @@ import { extend } from "@pixi/react";
 import { Sprite, Assets, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import heroTexture from "../../public/assets/actors/hero.png"
+import { CELL_SIZE } from "../core/constants";
 
 extend({
     Sprite,
@@ -24,16 +25,16 @@ export default function Hero({x, y}: HeroProps) {
         const onKeyDown = (e: KeyboardEvent) => {
             switch (e.key) {
                 case "ArrowUp":
-                    setCoords((prev) => ({x: prev.x, y: prev.y - 32}));
+                    setCoords((prev) => ({x: prev.x, y: prev.y - CELL_SIZE}));
                     break;
                 case "ArrowDown":
-                    setCoords((prev) => ({x: prev.x, y: prev.y + 32}));
+                    setCoords((prev) => ({x: prev.x, y: prev.y + CELL_SIZE}));
                     break;
                 case "ArrowLeft":
-                    setCoords((prev) => ({x: prev.x - 32, y: prev.y}));
+                    setCoords((prev) => ({x: prev.x - CELL_SIZE, y: prev.y}));
                     break;
                 case "ArrowRight":
-                    setCoords((prev) => ({x: prev.x + 32, y: prev.y}));
+                    setCoords((prev) => ({x: prev.x + CELL_SIZE, y: prev.y}));
                     break;
             }
         };

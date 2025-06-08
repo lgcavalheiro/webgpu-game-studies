@@ -1,16 +1,17 @@
 import React from "react";
 import Floor from "./Floor";
 import Wall from "./Wall";
+import { TileTypes } from "../core/constants";
 
-const TILE_LITERALS: Record<number, React.FC<any>> = {
-    0: Floor,
-    1: Wall,
-    2: Floor,
-    3: Floor,
+const TILE_LITERALS: Record<TileTypes, React.FC<any>> = {
+    [TileTypes.Floor]: Floor,
+    [TileTypes.Wall]: Wall,
+    [TileTypes.Door]: Floor,
+    [TileTypes.Player]: Floor,
 }
 
 interface TileManagerProps {
-    cell: number;
+    cell: TileTypes;
     [key: string]: any;
 }
 

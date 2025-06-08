@@ -2,6 +2,7 @@ import { Sprite, Texture } from "pixi.js";
 import { extend } from "@pixi/react";
 import { useRef } from "react";
 import Hero from "./Hero";
+import { TileTypes, CELL_SIZE } from "../core/constants";
 
 extend({
     Sprite,
@@ -10,13 +11,13 @@ extend({
 interface FloorProps {
     x: number;
     y: number;
-    cell: number;
+    cell: TileTypes;
 }
 
 export default function Floor({ x, y, cell }: FloorProps) {
     const spriteRef = useRef<Sprite>(null);
 
-    const tint = cell === 2 ? 0xFF0000 : 0x000000;
+    const tint = cell === TileTypes.Door ? 0xFF0000 : 0x000000;
 
     return (
         <>
@@ -25,12 +26,12 @@ export default function Floor({ x, y, cell }: FloorProps) {
                 ref={spriteRef} 
                 texture={Texture.WHITE} 
                 anchor={0.5} 
-                width={32}
-                height={32}
+                width={CELL_SIZE}
+                height={CELL_SIZE}
                 x={x}
                 y={y}
             />
-            {cell === 3 && <Hero x={x} y={y} />}
+            {cell === TileTypes.Player && <Hero x={x} y={y} />}
         </>
     );
 }

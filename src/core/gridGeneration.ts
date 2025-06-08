@@ -1,4 +1,6 @@
-type Grid = number[][];
+import { MIN_DIMENSION, TileTypes } from "./constants";
+
+type Grid = TileTypes[][];
 type Room = [number, number, number, number]; // x, y, width, height
 
 function getRandomInt(min: number, max: number): number {
@@ -7,17 +9,16 @@ function getRandomInt(min: number, max: number): number {
 
 export function generateOrganicGrid(width: number = 20, height: number = 20): Grid {
     // Validate dimensions
-    const minWidth = 8, minHeight = 8;
-    if (width < minWidth || height < minHeight) {
-        throw new Error(`Minimum dimensions are ${minWidth}x${minHeight}`);
+    if (width < MIN_DIMENSION || height < MIN_DIMENSION) {
+        throw new Error(`Minimum dimensions are ${MIN_DIMENSION}x${MIN_DIMENSION}`);
     }
     
     // Calculate maximum rooms (biggest dimension/2, minimum 2)
     const maxRooms = Math.max(2, Math.floor(Math.max(width, height) / 2));
     const numRooms = getRandomInt(2, maxRooms);
     
-    // Initialize grid with walls (1) and empty spaces (0)
-    const grid: Grid = Array(height).fill(null).map(() => Array(width).fill(1));
+    // Initialize grid with walls and empty spaces
+    const grid: Grid = Array(height).fill(null).map(() => Array(width).fill(TileTypes.Wall));
     
     const rooms: Room[] = [];
     
@@ -37,7 +38,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
         for (let i = y; i < y + roomHeight; i++) {
             for (let j = x; j < x + roomWidth; j++) {
                 if (i >= 0 && i < height && j >= 0 && j < width) {
-                    grid[i][j] = 0;
+                    grid[i][j] = TileTypes.Floor;
                 }
             }
         }
@@ -80,13 +81,13 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
                 
                 for (let x = x1; x !== x2 + stepX; x += stepX) {
                     if (x > 0 && x < width - 1 && y1 > 0 && y1 < height - 1) {
-                        grid[y1][x] = 0;
+                        grid[y1][x] = TileTypes.Floor;
                     }
                 }
                 
                 for (let y = y1; y !== y2 + stepY; y += stepY) {
                     if (y > 0 && y < height - 1 && x2 > 0 && x2 < width - 1) {
-                        grid[y][x2] = 0;
+                        grid[y][x2] = TileTypes.Floor;
                     }
                 }
                 
@@ -101,7 +102,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
     const floorCells: [number, number][] = [];
     for (let y = 1; y < height - 1; y++) {
         for (let x = 1; x < width - 1; x++) {
-            if (grid[y][x] === 0) {
+            if (grid[y][x] === TileTypes.Floor) {
                 floorCells.push([x, y]);
             }
         }
@@ -112,7 +113,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
     // Place door if there are valid floor cells
     if (floorCells.length > 0) {
         [doorX, doorY] = floorCells[Math.floor(Math.random() * floorCells.length)];
-        grid[doorY][doorX] = 2;
+        grid[doorY][doorX] = TileTypes.Door;
         
         // Remove door position from floor cells
         const doorIndex = floorCells.findIndex(([x, y]) => x === doorX && y === doorY);
@@ -136,7 +137,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
             }
             
             if (playerX !== -1 && playerY !== -1) {
-                grid[playerY][playerX] = 3;
+                grid[playerY][playerX] = TileTypes.Player;
                 
                 // Remove player position from floor cells
                 const playerIndex = floorCells.findIndex(([x, y]) => x === playerX && y === playerY);
@@ -156,7 +157,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
         let found = false;
         for (let i = 1; i < height - 1 && !found; i++) {
             for (let j = 1; j < width - 1; j++) {
-                if (grid[i][j] === 0) {
+                if (grid[i][j] === TileTypes.Floor) {
                     queue.push([i, j]);
                     visited[i][j] = true;
                     found = true;
@@ -177,7 +178,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
                 const ni = i + di;
                 const nj = j + dj;
                 if (ni > 0 && ni < height - 1 && nj > 0 && nj < width - 1) {
-                    if (grid[ni][nj] === 0 && !visited[ni][nj]) {
+                    if (grid[ni][nj] === TileTypes.Floor && !visited[ni][nj]) {
                         visited[ni][nj] = true;
                         queue.push([ni, nj]);
                     }
@@ -188,7 +189,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
         // Check if all non-edge empty spaces were visited
         for (let i = 1; i < height - 1; i++) {
             for (let j = 1; j < width - 1; j++) {
-                if (grid[i][j] === 0 && !visited[i][j]) {
+                if (grid[i][j] === TileTypes.Floor && !visited[i][j]) {
                     return false;
                 }
             }
@@ -201,7 +202,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
         const i = getRandomInt(1, height - 2);
         const j = getRandomInt(1, width - 2);
         
-        if (grid[i][j] === 1) {
+        if (grid[i][j] === TileTypes.Wall) {
             // Only convert if adjacent to existing empty space
             let adjacent = false;
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
@@ -210,7 +211,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
                 const ni = i + di;
                 const nj = j + dj;
                 if (ni >= 0 && ni < height && nj >= 0 && nj < width) {
-                    if (grid[ni][nj] === 0) {
+                    if (grid[ni][nj] === TileTypes.Floor) {
                         adjacent = true;
                         break;
                     }
@@ -220,7 +221,7 @@ export function generateOrganicGrid(width: number = 20, height: number = 20): Gr
             if (adjacent) {
                 grid[i][j] = 0;
                 if (!isConnected()) {
-                    grid[i][j] = 1; // Revert if breaks connectivity
+                    grid[i][j] = TileTypes.Wall; // Revert if breaks connectivity
                 }
             }
         }
@@ -234,18 +235,3 @@ export function printGrid(grid: Grid): void {
         console.log('|' + row.map(cell => cell === 1 ? '1' : '0').join('') + '|');
     }
 }
-
-// // Example usage
-// if (require.main === module) {
-//     console.log("12x16 Example:");
-//     let grid = generateOrganicGrid(12, 16);
-//     printGrid(grid);
-    
-//     console.log("\n20x20 Example:");
-//     grid = generateOrganicGrid(20, 20);
-//     printGrid(grid);
-    
-//     console.log("\n8x12 Minimum Size Example:");
-//     grid = generateOrganicGrid(8, 12);
-//     printGrid(grid);
-// }

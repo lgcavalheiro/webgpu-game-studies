@@ -2,6 +2,7 @@ import { Assets, Sprite, Texture } from "pixi.js";
 import { extend } from "@pixi/react";
 import { useEffect, useRef, useState } from "react";
 import floorTexture from "../../public/assets/tiles/floor.png"
+import { CELL_SIZE } from "../core/constants";
 
 extend({
     Sprite,
@@ -27,8 +28,8 @@ export default function Wall({ x, y }: WallProps) {
             ref={spriteRef} 
             texture={texture} 
             anchor={0.5} 
-            width={32}
-            height={32}
+            width={CELL_SIZE}
+            height={CELL_SIZE}
             x={x}
             y={y}
         />

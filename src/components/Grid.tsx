@@ -3,12 +3,11 @@ import { Container } from "pixi.js";
 import { useEffect, useState, useMemo } from "react";
 import { generateOrganicGrid } from "../core/gridGeneration";
 import TileManager from "./TileManager";
+import { CELL_SIZE, MIN_DIMENSION } from "../core/constants";
 
 extend({
     Container,
 });
-
-const CELL_SIZE = 32;
 
 export default function Grid() {
     const { app } = useApplication();
@@ -23,8 +22,8 @@ export default function Grid() {
     useEffect(() => {
         const maxGridWidth = Math.floor((window.innerWidth * 0.9) / CELL_SIZE);
         const maxGridHeight = Math.floor((window.innerHeight * 0.9) / CELL_SIZE);
-        const width = Math.floor(Math.random() * (maxGridWidth - 8 + 1) + 8);
-        const height = Math.floor(Math.random() * (maxGridHeight - 8 + 1) + 8);
+        const width = Math.floor(Math.random() * (maxGridWidth - MIN_DIMENSION + 1) + MIN_DIMENSION);
+        const height = Math.floor(Math.random() * (maxGridHeight - MIN_DIMENSION + 1) + MIN_DIMENSION);
         const newGrid = generateOrganicGrid(width, height);
         setGrid(newGrid);
     }, []);
