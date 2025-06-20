@@ -1,12 +1,7 @@
-import { Sprite, Texture } from "pixi.js";
-import { extend } from "@pixi/react";
 import { useRef } from "react";
 import Hero from "./Hero";
 import { TileTypes, CELL_SIZE } from "../core/constants";
-
-extend({
-    Sprite,
-});
+import { Rect } from "react-konva";
 
 interface FloorProps {
     x: number;
@@ -15,23 +10,21 @@ interface FloorProps {
 }
 
 export default function Floor({ x, y, cell }: FloorProps) {
-    const spriteRef = useRef<Sprite>(null);
+    const rectRef = useRef(null);
 
-    const tint = cell === TileTypes.Door ? 0xFF0000 : 0x000000;
+    const color = cell === TileTypes.Door ? "red" : "black";
 
     return (
         <>
-            <pixiSprite
-                tint={tint} 
-                ref={spriteRef} 
-                texture={Texture.WHITE} 
-                anchor={0.5} 
+            {cell === TileTypes.Player && <Hero x={x} y={y} />}
+            <Rect
+                fill={color} 
+                ref={rectRef} 
                 width={CELL_SIZE}
                 height={CELL_SIZE}
                 x={x}
                 y={y}
             />
-            {cell === TileTypes.Player && <Hero x={x} y={y} />}
         </>
     );
 }

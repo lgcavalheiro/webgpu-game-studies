@@ -1,24 +1,20 @@
-import { extend, useApplication } from "@pixi/react";
-import { Container } from "pixi.js";
 import { useEffect, useMemo } from "react";
 import { generateOrganicGrid } from "../core/gridGeneration";
 import TileManager from "./TileManager";
 import { CELL_SIZE, MIN_DIMENSION } from "../core/constants";
 import { useGameplayContext } from "../context/GameplayContext";
+import { Layer } from "react-konva";
 
-extend({
-    Container,
-});
+
 
 export default function Grid() {
-    const { app } = useApplication();
     const { grid, setGrid } = useGameplayContext();
 
     const gridWidth = useMemo(() => grid[0]?.length || 0, [grid]) * CELL_SIZE;
     const gridHeight = useMemo(() => grid.length, [grid]) * CELL_SIZE;
 
-    const gridX = useMemo(() => (app.screen.width - gridWidth) / 2, [app.screen.width, gridWidth]);
-    const gridY = useMemo(() => (app.screen.height - gridHeight) / 2, [app.screen.height, gridHeight]);
+    const gridX = useMemo(() => (window.innerWidth - gridWidth) / 2, [window.innerWidth, gridWidth]);
+    const gridY = useMemo(() => (window.innerHeight - gridHeight) / 2, [window.innerHeight, gridHeight]);
 
     useEffect(() => {
         const maxGridWidth = Math.floor((window.innerWidth * 0.9) / CELL_SIZE);
@@ -30,10 +26,10 @@ export default function Grid() {
     }, []);
 
     return (
-        <pixiContainer x={gridX} y={gridY}>
+        <Layer x={gridX} y={gridY}>
             {grid.map((row, y) =>
                 row.map((cell, x) => <TileManager cell={cell} key={`${x}-${y}`} x={x * CELL_SIZE} y={y * CELL_SIZE} />)
             )}
-        </pixiContainer>
+        </Layer>
     );
 }

@@ -1,13 +1,9 @@
-import { extend } from "@pixi/react";
-import { Sprite, Assets, Texture } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
-import heroTexture from "../assets/actors/hero.png"
+import { useEffect, useRef } from "react";
 import { CELL_SIZE } from "../core/constants";
 import { useGameplayContext } from "../context/GameplayContext";
-
-extend({
-    Sprite,
-})
+import { Image } from "react-konva";
+import useImage from "use-image";
+import heroTexture from "../assets/actors/hero.png";
 
 interface HeroProps {
     x: number;
@@ -16,8 +12,9 @@ interface HeroProps {
 
 export default function Hero({ x, y }: HeroProps) {
     const { isBlocked, heroPosition, setHeroPosition } = useGameplayContext();
-    const [texture, setTexture] = useState<Texture>(Texture.WHITE);
     const positionRef = useRef(heroPosition);
+    const [heroImage] = useImage(heroTexture);
+    const rectRef = useRef<any>(null);
 
     useEffect(() => {
         positionRef.current = heroPosition;
@@ -26,8 +23,7 @@ export default function Hero({ x, y }: HeroProps) {
     useEffect(() => {
         setHeroPosition({ x, y });
         positionRef.current = { x, y };
-
-        Assets.load(heroTexture).then(setTexture);
+        rectRef.current?.zIndex(999);
 
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.repeat) return;
@@ -63,12 +59,11 @@ export default function Hero({ x, y }: HeroProps) {
         };
     }, []);
 
-
-    return <pixiSprite
-        texture={texture}
-        anchor={0.5}
+    return <Image
+        ref={rectRef}
+        image={heroImage}
         x={heroPosition.x}
         y={heroPosition.y}
-        zIndex={9999}
+        offset={{ x: -12, y: -12 }}
     />
 }

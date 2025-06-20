@@ -1,12 +1,8 @@
-import { Assets, Sprite, Texture } from "pixi.js";
-import { extend } from "@pixi/react";
-import { useEffect, useRef, useState } from "react";
-import floorTexture from "../assets/tiles/floor.png"
 import { CELL_SIZE } from "../core/constants";
+import { Image } from "react-konva";
+import useImage from "use-image";
+import wallTexture from "../assets/tiles/floor.png"
 
-extend({
-    Sprite,
-});
 
 interface WallProps {
     x: number;
@@ -14,20 +10,11 @@ interface WallProps {
 }
 
 export default function Wall({ x, y }: WallProps) {
-    const spriteRef = useRef<Sprite>(null);
-    const [texture, setTexture] = useState<Texture>(Texture.WHITE);
-
-    useEffect(() => {
-        Assets.load(floorTexture).then((texture) => {
-            setTexture(texture);
-        });
-    }, []);
+    const [wallImage] = useImage(wallTexture);
 
     return (
-        <pixiSprite 
-            ref={spriteRef} 
-            texture={texture} 
-            anchor={0.5} 
+        <Image
+            image={wallImage}
             width={CELL_SIZE}
             height={CELL_SIZE}
             x={x}
