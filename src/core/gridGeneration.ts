@@ -5,13 +5,16 @@ function getRandomInt(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function generateOrganicGrid(width: number, height: number): Grid {
+export function generateOrganicGrid(width: number, height: number, roomModifier: number): Grid {
     // Validate dimensions
     if (width < MIN_DIMENSION) width = MIN_DIMENSION;
     if (height < MIN_DIMENSION) height = MIN_DIMENSION;
-    
+
+    if(width > Math.floor(window.innerWidth * 0.03)) width = Math.floor(window.innerWidth * 0.03);
+    if(height > Math.floor(window.innerHeight * 0.03)) height = Math.floor(window.innerHeight * 0.03);
+
     // Calculate maximum rooms (biggest dimension/2, minimum 2)
-    const maxRooms = Math.max(2, Math.floor(Math.max(width, height) / 2));
+    const maxRooms = Math.min(2 + roomModifier, Math.floor(Math.min(width, height) / 2));
     const numRooms = getRandomInt(2, maxRooms);
     
     // Initialize grid with walls and empty spaces

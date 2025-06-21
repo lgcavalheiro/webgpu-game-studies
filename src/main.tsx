@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router";
 import App from "./App.tsx";
 import GameplayProvider from "./context/GameplayContext.tsx";
 
-const container = document.getElementById("pixi-container");
+const container = document.getElementById("game-container");
 if (!container) throw new Error('Failed to find the root element');
 
 const root = createRoot(container);

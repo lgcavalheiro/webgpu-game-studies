@@ -23,7 +23,7 @@ export default function Hero({ x, y }: HeroProps) {
     useEffect(() => {
         setHeroPosition({ x, y });
         positionRef.current = { x, y };
-        rectRef.current?.zIndex(999);
+        rectRef.current?.zIndex(9999999);
 
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.repeat) return;

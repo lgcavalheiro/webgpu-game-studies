@@ -1,12 +1,36 @@
-import { Route, Routes } from "react-router";
-import Home from "./views/Home";
+import { useRoutes } from "react-router";
+import { Stage } from "react-konva";
 import Game from "./views/Game";
+import Home from "./views/Home";
 
-export default function AppRoutes() {
-    return (
-        <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/game" element={<Game />} />
-        </Routes>
-    );
+function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <Stage style={{ backgroundColor: "#1099bb" }} width={window.innerWidth} height={window.innerHeight}>
+      {children}
+    </Stage>
+  );
 }
+
+const routes = [
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/game",
+    element: <Game />,
+  },
+];
+
+const AppRoutes = () => {
+  const element = useRoutes(
+    routes.map((route) => ({
+      ...route,
+      element: <Layout>{route.element}</Layout>,
+    }))
+  );
+
+  return element;
+};
+
+export default AppRoutes;
