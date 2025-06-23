@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { CELL_SIZE } from "../core/constants";
 import { useGameplayContext } from "../context/GameplayContext";
 import { Image } from "react-konva";
@@ -11,10 +11,20 @@ interface HeroProps {
 }
 
 export default function Hero({ x, y }: HeroProps) {
-    const { isBlocked, heroPosition, setHeroPosition } = useGameplayContext();
+    const { isBlocked, heroPosition, setHeroPosition, atDoor, goDeeper } = useGameplayContext();
     const positionRef = useRef(heroPosition);
+    const atDoorRef = useRef(atDoor);
     const [heroImage] = useImage(heroTexture);
     const rectRef = useRef<any>(null);
+
+    useEffect(() => {
+        atDoorRef.current = atDoor;
+    }, [atDoor]);
+
+    const tryDoor = useCallback(() => {
+        if (!atDoorRef.current) return;
+        goDeeper();
+    }, [goDeeper]);
 
     useEffect(() => {
         positionRef.current = heroPosition;
@@ -43,6 +53,9 @@ export default function Hero({ x, y }: HeroProps) {
                     break;
                 case "ArrowRight":
                     newX += CELL_SIZE;
+                    break;
+                case "Enter":
+                    tryDoor();
                     break;
                 default:
                     return;

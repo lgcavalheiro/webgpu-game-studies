@@ -1,4 +1,4 @@
-import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useMemo, useState } from "react";
 import { Coords } from "../interfaces/common";
 import { pixelToCellIndex } from "../core/utils";
 import { CELL_SIZE, MIN_DIMENSION, TileTypes } from "../core/constants";
@@ -24,7 +24,6 @@ export default function GameplayProvider({ children }: { children: React.ReactNo
     const [heroPosition, setHeroPosition] = useState<Coords>({ x: 0, y: 0 });
     const [floor, setFloor] = useState<number>(0);
     const [playing, setPlaying] = useState<boolean>(false);
-    const [atDoor, setAtDoor] = useState<boolean>(false);
     const [floorModifier, setFloorModifier] = useState<number>(parseFloat((floor / 25).toFixed(2)));
 
     const isBlocked = (x: number, y: number): boolean => {
@@ -57,15 +56,16 @@ export default function GameplayProvider({ children }: { children: React.ReactNo
         rebuildGrid();
     }
 
+    const atDoor = useMemo(() => {
+        if (!grid.length) return false;
+        const { x, y } = pixelToCellIndex(heroPosition);
+        if(!grid[y] || !grid[y][x]) return false;
+        return grid[y][x] === TileTypes.Door;
+    }, [heroPosition, grid])
+
     useEffect(() => {
         rebuildGrid();
     }, []);
-
-    useEffect(() => {
-        if (!grid.length) return;
-        const { x, y } = pixelToCellIndex(heroPosition);
-        setAtDoor(grid[y][x] === TileTypes.Door);
-    }, [heroPosition])
 
     const value = {
         grid,
